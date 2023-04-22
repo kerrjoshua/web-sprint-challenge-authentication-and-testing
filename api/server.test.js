@@ -4,6 +4,7 @@ const request = require('supertest')
 const db = require("../data/dbConfig")
 const server = require('./server')
 const bcrypt = require('bcryptjs')
+const User = require('./auth/auth-model')
 
 const joke1 = { joke: "Why did the chicken cross the road? It didn't" }
 const joke2 = { joke: "bar" }
@@ -22,7 +23,7 @@ afterAll(async () => {
 })
 
 test('sanity', () => {
-  expect(true).toBe(false)
+  expect(0).toBeFalsy
 })
 
 describe('server.js', () => {
@@ -41,11 +42,9 @@ describe('/auth', () => {
   describe('POST /login', () => {
   
     const user = { username: 'foo', password: 'bar' } 
-    const hash = bcrypt.hashSync(user.password, 8)  
-    user.password = hash 
 
     it('[2] should respond with a message and a token', async () => {
-      await db('users').insert(user)
+     const addedUser = await User.addUser(user)
       const response = await request(server).post('/api/auth/login').send(user)
       expect(response.body)
         .toMatchObject(

@@ -11,8 +11,7 @@ module.exports = async (req, res, next) => {
         res.status(401).json({ message: 'username taken' })
     }
     else {
-        req.username = username;
-        req.password = password;
+        req.user = { username, password};
         next()
     }
 }

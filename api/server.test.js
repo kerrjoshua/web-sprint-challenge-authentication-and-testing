@@ -4,8 +4,8 @@ const request = require('supertest')
 const db = require("../data/dbConfig")
 const server = require('./server')
 
-const joke1 = { joke: "Why did the chicken cross the road? It didn't"}
-const joke2 = { joke: "bar"}
+const joke1 = { joke: "Why did the chicken cross the road? It didn't" }
+const joke2 = { joke: "bar" }
 
 beforeAll(async () => {
   await db.migrate.rollback()
@@ -32,7 +32,27 @@ describe('server.js', () => {
 
       expect(response.status).toEqual(expectedStatusCode)
     })
-    
+
+  })
+})
+
+describe('/auth', () => {
+  describe('POST /login', () => {
+    it('[num] should respond with a message and a token', async () => {
+      const user = { username: 'foo', password: 'bar' }
+      const expectedBody = {
+        message: "welcome, foo",
+        token: "zap"
+      }
+      response = await request(server).post('/api/auth/login').send(user)
+      expect(response.body)
+        .toMatchObject(
+          expect.objectContaining({
+            message: "welcome, foo",
+            token: expect.any(String)
+          })
+        )
+    })
   })
 })
 
@@ -49,11 +69,11 @@ describe('GET /api/jokes', () => {
       const response = (await request(server)
         .get('/api/jokes')
         .set('Authorization', 'none')
-        
-        );
+
+      );
 
       expect(response.body.message).toBe(expectedMessage)
     })
-    
+
   })
 })

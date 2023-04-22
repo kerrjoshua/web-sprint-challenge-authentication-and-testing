@@ -4,6 +4,8 @@ module.exports = (req, res, next) => {
 
   if (!token) {
     return next({ status: 401, message: 'token required'})
+  } else {
+    next()
   }
   /*
     IMPLEMENT

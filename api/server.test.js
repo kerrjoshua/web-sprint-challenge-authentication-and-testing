@@ -38,13 +38,12 @@ describe('server.js', () => {
 
 describe('/auth', () => {
   describe('POST /login', () => {
-    it('[num] should respond with a message and a token', async () => {
-      const user = { username: 'foo', password: 'bar' }
-      const expectedBody = {
-        message: "welcome, foo",
-        token: "zap"
-      }
-      response = await request(server).post('/api/auth/login').send(user)
+  
+    const user = { username: 'foo', password: 'bar' }    
+
+    it('[2] should respond with a message and a token', async () => {
+      await db('users').insert(user)
+      const response = await request(server).post('/api/auth/login').send(user)
       expect(response.body)
         .toMatchObject(
           expect.objectContaining({
@@ -53,18 +52,45 @@ describe('/auth', () => {
           })
         )
     })
+    it('[3] should throw proper error for incomplete credentials', async () => {
+      const response1 =
+        await request(server)
+          .post('/api/auth/login')
+          .send({ username: 'foo' })
+ 
+      const response2 =
+        await request(server)
+          .post('/api/auth/login')
+          .send({ password: '1234' }) 
+
+
+      expect(response1.body.message)
+        .toBe('username and password required')
+      expect(response2.body.message)
+        .toBe('username and password required')
+    })
+
+    it('[4] should throw proper error for invalid credentials', async () => {
+      const user1 = { username: "Joshua", password: "1234" }
+      const response1 = await request(server)
+        .post('/api/auth/login')
+        .send(user1)
+
+      expect(response1.body.message)
+        .toBe('invalid credentials')
+    })
   })
 })
 
 describe('GET /api/jokes', () => {
   describe('jokes route', () => {
-    it('[2] returns proper response to missing auth token', async () => {
+    it('[5] returns proper response to missing auth token', async () => {
       const expectedMessage = "token required";
       const response = await request(server).get('/api/jokes');
 
       expect(response.body.message).toBe(expectedMessage)
     })
-    it('[3] returns proper response to invalid token', async () => {
+    it('[6] returns proper response to invalid token', async () => {
       const expectedMessage = "invalid token";
       const response = (await request(server)
         .get('/api/jokes')

@@ -18,3 +18,16 @@ describe('server.js', () => {
     
   })
 })
+
+describe('/api/jokes', () => {
+  describe('jokes route', () => {
+    it('[2] returns proper response to missing auth token', async () => {
+      const expectedMessage = "token required";
+      const response = await request(server).get('/api/jokes');
+      console.log(response)
+
+      expect(response).toEqual(expectedMessage)
+    })
+    
+  })
+})

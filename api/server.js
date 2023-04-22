@@ -19,7 +19,11 @@ server.use('/', (req, res, next) => {
     res.json({ api: 'up'})
 })
 server.use((err, req, res, next) => {
-    res.status(500).json( { message: "something went wrong with the server"})
+    res.status(err.status || 500).json(
+        err.message ? 
+        { message: err.message,
+        stack: err.stack} :
+        { message: "something went wrong with the server"})
 })
 
 module.exports = server;

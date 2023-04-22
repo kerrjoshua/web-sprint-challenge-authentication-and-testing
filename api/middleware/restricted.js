@@ -1,5 +1,10 @@
 module.exports = (req, res, next) => {
-  next();
+  const token = req.headers.authorization
+  console.log(token)
+
+  if (!token) {
+    return next({ status: 401, message: 'token required'})
+  }
   /*
     IMPLEMENT
 

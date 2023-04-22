@@ -3,6 +3,7 @@
 const request = require('supertest')
 const db = require("../data/dbConfig")
 const server = require('./server')
+const bcrypt = require('bcryptjs')
 
 const joke1 = { joke: "Why did the chicken cross the road? It didn't" }
 const joke2 = { joke: "bar" }
@@ -39,7 +40,9 @@ describe('server.js', () => {
 describe('/auth', () => {
   describe('POST /login', () => {
   
-    const user = { username: 'foo', password: 'bar' }    
+    const user = { username: 'foo', password: 'bar' } 
+    const hash = bcrypt.hashSync(user.password, 8)  
+    user.password = hash 
 
     it('[2] should respond with a message and a token', async () => {
       await db('users').insert(user)
